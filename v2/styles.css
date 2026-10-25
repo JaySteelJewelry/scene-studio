@@ -1,6 +1,6 @@
 /* Scene Studio v2 — cinematic dark UI. System fonts only, no remote assets. */
 :root{
-  --bg:#07080b; --bg2:#0d0f14; --ink:#f4f1ea; --ink2:#b9b6ae; --ink3:#7d7a74;
+  --bg:#07080b; --bg2:#0d0f14; --ink:#f4f1ea; --ink2:#b9b6ae; --ink3:#8a867f;
   --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
   --glass:rgba(22,24,31,.62); --glass2:rgba(255,255,255,.045);
   --gold:#f2c46d; --amber:#ff9a4d; --rose:#ff5c7a; --violet:#8b6cff; --ok:#5fd39a; --bad:#ff6b6b;
@@ -394,3 +394,9 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
   @keyframes slide{from{transform:translateX(100%)}to{transform:none}}
   @keyframes slideout{to{transform:translateX(100%)}}
 }
+
+/* Web build standard (Oct 25): add-shot is a real button; 44px tap areas on segmented controls without changing the look */
+button.add-shot{background:transparent;font:inherit;width:100%;height:100%;text-align:center}
+.board>li.add-li{display:flex;list-style:none}
+.seg button{position:relative}
+.seg button::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}

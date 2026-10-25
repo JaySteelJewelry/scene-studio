@@ -327,11 +327,11 @@ function renderTimeline() {
 function renderShots() {
   const ol = $('#board'); ol.innerHTML = '';
   project.shots.forEach((sh, i) => ol.appendChild(shotCard(sh, i)));
-  const add = document.createElement('li'); add.className = 'add-shot'; add.tabIndex = 0; add.setAttribute('role', 'button');
+  const li = document.createElement('li'); li.className = 'add-li';
+  const add = document.createElement('button'); add.type = 'button'; add.className = 'add-shot';
   add.innerHTML = `<span class="plus">${icon('plus')}</span><span>Add shot</span><small class="hint">write it or start from a template</small>`;
   add.onclick = () => addShot();
-  add.onkeydown = (e) => { if (e.key === 'Enter') addShot(); };
-  ol.appendChild(add);
+  li.appendChild(add); ol.appendChild(li);
   sampleIfEmpty();
   renderStats();
 }

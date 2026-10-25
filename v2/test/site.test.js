@@ -49,3 +49,12 @@ test('content rules: no bypass or uncensored features', () => {
   const all = [html, app, read('lib/core.js'), read('providers/fal.js')].join('\n').toLowerCase();
   for (const w of ['uncensored', 'nsfw', 'jailbreak', 'bypass filter', 'safety_tolerance']) assert.ok(!all.includes(w), w);
 });
+
+test('web build standard (Oct 25): AA muted text, add-shot is a real button, landmarks + h1 on the board', () => {
+  const css = read('styles.css');
+  assert.ok(!css.includes('--ink3:#7d7a74'), 'muted text below 4.5:1');
+  assert.ok(!app.includes("add.setAttribute('role', 'button')") && app.includes("add.type = 'button'; add.className = 'add-shot'"));
+  assert.match(html, /<h1 class="eyebrow">Storyboard<\/h1>/);
+  assert.match(html, /id="keyBanner" class="banner" role="region"/);
+  for (const m of (html + app).matchAll(/target="_blank"[^>]*/g)) assert.match(m[0], /noopener/);
+});
