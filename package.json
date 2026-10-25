@@ -1,0 +1,9 @@
+{
+  "name": "scene-studio",
+  "version": "1.0.0",
+  "description": "Write a story shot by shot, generate each shot with open-source video models on fal.ai, and stitch them into one movie, all in the browser.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": { "test": "node --test" }
+}

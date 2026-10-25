@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0b0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Scene Studio">
+<title>Scene Studio</title>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="gate" class="gate">
+  <form id="gateForm" class="gate-card" autocomplete="off">
+    <div class="logo" aria-hidden="true"></div>
+    <h1>Scene Studio</h1>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
+    <button type="submit" class="btn primary">Unlock</button>
+    <p id="gateErr" class="err" role="alert"></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><span class="logo sm" aria-hidden="true"></span><span>Scene Studio</span></div>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab active" data-view="story" aria-current="page">Story</button>
+      <button class="tab" data-view="gallery">Gallery</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+  </header>
+
+  <div id="keyBanner" class="notice" hidden>
+    Add your fal.ai key in <button class="link" data-goto="settings">Settings</button> to start generating.
+  </div>
+
+  <main>
+    <!-- STORY -->
+    <section id="view-story" class="view" aria-label="Story">
+      <div class="card storybar">
+        <div class="row">
+          <label class="grow"><span class="lbl">Story</span>
+            <select id="storySelect"></select>
+          </label>
+          <button id="newStory" class="btn ghost" type="button" title="New story">+ New</button>
+        </div>
+        <label><span class="lbl">Title</span><input id="storyTitle" type="text" maxlength="80"></label>
+        <div class="row wrap">
+          <div><span class="lbl">Frame</span>
+            <div class="seg" id="aspectSeg" role="radiogroup" aria-label="Frame">
+              <button type="button" data-v="16:9" role="radio">16:9</button>
+              <button type="button" data-v="9:16" role="radio">9:16</button>
+              <button type="button" data-v="1:1" role="radio">1:1</button>
+            </div>
+          </div>
+          <label class="grow"><span class="lbl">Model for new shots</span><select id="storyModel"></select></label>
+        </div>
+        <div class="summary">
+          <span id="sumText">0 shots</span>
+          <button id="genAll" class="btn primary" type="button">Generate all</button>
+        </div>
+      </div>
+
+      <ol id="shots" class="shots"></ol>
+      <button id="addShot" class="btn add" type="button">+ Add shot</button>
+
+      <div class="card final">
+        <h2>Final movie</h2>
+        <p class="muted" id="finalHint">Joins the latest take of every shot, in order.</p>
+        <div class="row wrap">
+          <button id="stitchBtn" class="btn primary" type="button">Stitch movie</button>
+          <button id="playAllBtn" class="btn ghost" type="button">Play all in order</button>
+        </div>
+        <p id="stitchStatus" class="status" aria-live="polite"></p>
+        <div id="finalOut"></div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="view-gallery" class="view" hidden aria-label="Gallery">
+      <div class="card">
+        <div class="row"><h2 class="grow">Movies</h2></div>
+        <div id="finalsList" class="list"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h2 class="grow">Clips</h2>
+          <select id="galleryFilter" aria-label="Filter clips"></select>
+        </div>
+        <div id="clipGrid" class="grid"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h2 class="grow">Start images</h2>
+          <label class="btn ghost file">Upload<input id="libUpload" type="file" accept="image/*" multiple hidden></label>
+        </div>
+        <p class="muted">Character sheets and reference frames. Pick one as the first frame of any shot.</p>
+        <div id="imgGrid" class="grid imgs"></div>
+      </div>
+      <p id="storageNote" class="muted small"></p>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view" hidden aria-label="Settings">
+      <div class="card">
+        <h2>fal.ai key</h2>
+        <p class="muted">Stored only in this browser. Videos are made on your fal.ai account and billed there.</p>
+        <div class="row">
+          <input id="falKey" class="grow mono" type="password" autocomplete="off" spellcheck="false" placeholder="paste your key">
+          <button id="toggleKey" class="btn ghost" type="button">Show</button>
+        </div>
+        <div class="row">
+          <button id="saveKey" class="btn primary" type="button">Save key</button>
+          <button id="clearKey" class="btn ghost" type="button">Remove</button>
+        </div>
+        <p id="keyStatus" class="status"></p>
+        <details>
+          <summary>How to get a key</summary>
+          <ol class="steps">
+            <li>Sign up at <a href="https://fal.ai" target="_blank" rel="noopener">fal.ai</a> (Google or GitHub login works).</li>
+            <li>Add credit: <a href="https://fal.ai/dashboard/billing" target="_blank" rel="noopener">fal.ai/dashboard/billing</a>. $10 is plenty to start (a 5 s draft clip is about $0.05–$0.40).</li>
+            <li>Make a key: <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a> → Add key → copy it and paste it above.</li>
+          </ol>
+        </details>
+      </div>
+      <div class="card">
+        <h2>Quality</h2>
+        <div class="seg" id="qualitySeg" role="radiogroup" aria-label="Quality">
+          <button type="button" data-v="draft" role="radio">Draft</button>
+          <button type="button" data-v="standard" role="radio">Standard</button>
+          <button type="button" data-v="max" role="radio">Max</button>
+        </div>
+        <p class="muted small">Draft is the cheapest resolution each model offers; Max the sharpest.</p>
+        <label class="check"><input id="audioOn" type="checkbox"> Sound on models that make it (LTX-2.3, Kling 3.0)</label>
+        <label><span class="lbl">Shots generated at once</span>
+          <select id="concurrency"><option>1</option><option>2</option><option selected>3</option><option>4</option></select>
+        </label>
+      </div>
+      <div class="card">
+        <h2>Models</h2>
+        <div id="modelList" class="list"></div>
+      </div>
+      <div class="card">
+        <h2>This device</h2>
+        <p id="storageNote2" class="muted small"></p>
+        <button id="lockBtn" class="btn ghost" type="button">Lock</button>
+      </div>
+      <p class="muted small center">Open source · MIT · <a href="https://github.com/JaySteelJewelry/scene-studio" target="_blank" rel="noopener">source</a></p>
+    </section>
+  </main>
+</div>
+
+<dialog id="player" class="player">
+  <div class="player-head"><span id="playerTitle">Playing</span><button id="playerClose" class="btn ghost" type="button">Close</button></div>
+  <video id="playerVideo" playsinline controls></video>
+</dialog>
+
+<template id="shotTpl">
+  <li class="card shot">
+    <div class="shot-head">
+      <span class="num"></span>
+      <span class="badge"></span>
+      <span class="grow"></span>
+      <button class="icon up" type="button" aria-label="Move up">↑</button>
+      <button class="icon down" type="button" aria-label="Move down">↓</button>
+      <button class="icon del" type="button" aria-label="Delete shot">✕</button>
+    </div>
+    <label class="sr" >Prompt</label>
+    <textarea class="prompt" rows="3" placeholder="What happens in this shot? Who, where, camera move…"></textarea>
+    <div class="imgrow">
+      <div class="thumb" hidden><img alt="Start image"><button class="icon rmimg" type="button" aria-label="Remove start image">✕</button></div>
+      <label class="btn ghost file addimg">Start image<input type="file" accept="image/*" hidden></label>
+      <select class="libpick" aria-label="Reuse an image"></select>
+    </div>
+    <div class="row wrap opts">
+      <label><span class="lbl">Length</span><select class="dur"></select></label>
+      <label class="grow"><span class="lbl">Model</span><select class="model"></select></label>
+    </div>
+    <p class="price muted small"></p>
+    <div class="progress" hidden><div class="bar"></div></div>
+    <p class="status small" aria-live="polite"></p>
+    <div class="clip"></div>
+    <div class="row">
+      <button class="btn primary gen" type="button">Generate</button>
+      <button class="btn ghost cancel" type="button" hidden>Stop</button>
+    </div>
+  </li>
+</template>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
