@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07080b">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Scene Studio">
+<meta name="description" content="Scene Studio: storyboard, generate and finish short films in your browser.">
+<title>Scene Studio</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><i class="grain"></i></div>
+
+<div id="gate" class="gate">
+  <form id="gateForm" class="gate-card" autocomplete="off">
+    <div class="mark" aria-hidden="true"><img src="assets/logo.svg" alt="" width="64" height="64"></div>
+    <h1 class="wordmark">Scene<span>Studio</span></h1>
+    <p class="tagline">Storyboard. Generate. Finish.</p>
+    <label class="sr" for="pw">Password</label>
+    <div class="pw-wrap">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Password" required>
+      <button type="submit" class="btn primary round" aria-label="Unlock"><span data-icon="arrow"></span></button>
+    </div>
+    <p id="gateErr" class="err" role="alert"></p>
+    <p class="fine">Private studio · everything stays on this device</p>
+  </form>
+</div>
+
+<div id="app" class="app" hidden>
+  <nav id="nav" class="nav" aria-label="Sections">
+    <div class="nav-brand"><img src="assets/logo.svg" alt="" width="28" height="28"><span class="wordmark sm">Scene<span>Studio</span></span></div>
+    <button class="nav-btn" data-view="projects"><span data-icon="folder"></span><b>Projects</b></button>
+    <button class="nav-btn" data-view="board"><span data-icon="board"></span><b>Board</b></button>
+    <button class="nav-btn" data-view="cast"><span data-icon="users"></span><b>Cast</b></button>
+    <button class="nav-btn" data-view="gallery"><span data-icon="film"></span><b>Gallery</b></button>
+    <button class="nav-btn" data-view="settings"><span data-icon="gear"></span><b>Settings</b></button>
+    <div class="nav-foot"><button id="lockBtn" class="nav-btn ghosty" type="button"><span data-icon="lock"></span><b>Lock</b></button></div>
+  </nav>
+
+  <div class="main-col">
+    <header class="top">
+      <button id="projBtn" class="proj-btn" type="button" aria-label="Switch project">
+        <img class="m-logo" src="assets/logo.svg" alt="" width="26" height="26">
+        <span class="proj-name" id="topTitle">Scene Studio</span><span data-icon="chev"></span>
+      </button>
+      <div class="top-right">
+        <div class="spent" id="spentPill" title="Estimated spend this session (fal bills the exact amount)"><span data-icon="coins"></span><span id="spentVal">$0.00</span><small>session</small></div>
+        <button id="lockBtnTop" class="icon-btn" type="button" aria-label="Lock"><span data-icon="lock"></span></button>
+      </div>
+    </header>
+
+    <div id="keyBanner" class="banner" hidden>
+      <span data-icon="key"></span><span>Add your fal.ai key to start generating.</span><button class="btn sm" data-goto="settings" type="button">Add key</button>
+    </div>
+
+    <main id="main">
+      <!-- PROJECTS -->
+      <section id="view-projects" class="view" hidden aria-labelledby="h-projects">
+        <div class="view-head">
+          <div><p class="eyebrow">Library</p><h1 id="h-projects">Projects</h1></div>
+          <div class="head-actions">
+            <label class="btn ghost file"><span data-icon="upload"></span><span>Import</span><input id="importFile" type="file" accept="application/json,.json" hidden></label>
+            <button id="newProject" class="btn primary" type="button"><span data-icon="plus"></span><span>New project</span></button>
+          </div>
+        </div>
+        <div id="projectGrid" class="proj-grid"></div>
+      </section>
+
+      <!-- BOARD -->
+      <section id="view-board" class="view" aria-labelledby="projTitle">
+        <div class="hero glass">
+          <div class="hero-cover" id="heroCover"></div>
+          <div class="hero-body">
+            <p class="eyebrow">Storyboard</p>
+            <input id="projTitle" class="title-input" type="text" maxlength="80" aria-label="Project name" spellcheck="false">
+            <div class="stats" id="stats"></div>
+            <div class="hero-row">
+              <div class="seg" id="aspectSeg" role="radiogroup" aria-label="Aspect ratio">
+                <button type="button" data-v="16:9" role="radio"><i class="ar ar169"></i>16:9</button>
+                <button type="button" data-v="9:16" role="radio"><i class="ar ar916"></i>9:16</button>
+                <button type="button" data-v="1:1" role="radio"><i class="ar ar11"></i>1:1</button>
+              </div>
+              <button id="styleBtn" class="chip-btn" type="button"><span data-icon="palette"></span><span id="styleSummary">Style</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline glass" aria-label="Timeline">
+          <div class="tl-head"><span class="eyebrow">Timeline</span><span id="tlTotal" class="tl-total">0s</span></div>
+          <div id="timeline" class="tl-track"></div>
+        </div>
+
+        <div class="board-head">
+          <h2>Shots</h2>
+          <div class="head-actions">
+            <button id="genAll" class="btn primary" type="button"><span data-icon="sparkles"></span><span id="genAllLbl">Generate all</span></button>
+          </div>
+        </div>
+        <ol id="board" class="board" aria-label="Shots"></ol>
+
+        <div class="finish glass" id="finish">
+          <div class="finish-head">
+            <div><p class="eyebrow">Finishing</p><h2>Final cut</h2></div>
+            <span id="finishRuntime" class="tl-total"></span>
+          </div>
+          <div class="finish-grid">
+            <div class="fcard">
+              <label class="switch"><input type="checkbox" id="fTitleOn"><i></i><span>Title card</span></label>
+              <input id="fTitle" type="text" maxlength="60" placeholder="Film title">
+              <input id="fSubtitle" type="text" maxlength="80" placeholder="Subtitle (optional)">
+            </div>
+            <div class="fcard">
+              <label class="switch"><input type="checkbox" id="fEndOn"><i></i><span>End card</span></label>
+              <input id="fEnd" type="text" maxlength="80" placeholder="The End">
+            </div>
+            <div class="fcard">
+              <label class="switch"><input type="checkbox" id="fFade"><i></i><span>Crossfade between shots</span></label>
+              <div class="seg sm" id="fadeSeg" role="radiogroup" aria-label="Crossfade length">
+                <button type="button" data-v="0.5" role="radio">0.5s</button><button type="button" data-v="0.75" role="radio">0.75s</button><button type="button" data-v="1" role="radio">1s</button>
+              </div>
+            </div>
+            <div class="fcard">
+              <span class="lbl"><span data-icon="music"></span> Music</span>
+              <div id="musicBox" class="music-box"></div>
+              <label class="range"><span>Volume</span><input id="fVol" type="range" min="0.05" max="1" step="0.05"></label>
+            </div>
+            <div class="fcard">
+              <span class="lbl">Export</span>
+              <div class="seg" id="resSeg" role="radiogroup" aria-label="Export resolution">
+                <button type="button" data-v="720" role="radio">720p</button><button type="button" data-v="1080" role="radio">1080p</button>
+              </div>
+              <p class="hint">1080p takes longer to render on a phone.</p>
+            </div>
+          </div>
+          <div class="card-previews" id="cardPreviews"></div>
+          <div class="finish-actions">
+            <button id="stitchBtn" class="btn primary lg" type="button"><span data-icon="film"></span><span>Render movie</span></button>
+            <button id="playAllBtn" class="btn ghost lg" type="button"><span data-icon="play"></span><span>Play all</span></button>
+          </div>
+          <div class="progress" id="stitchProg" hidden><i></i></div>
+          <p id="stitchStatus" class="status" aria-live="polite"></p>
+          <div id="finalOut"></div>
+        </div>
+      </section>
+
+      <!-- CAST -->
+      <section id="view-cast" class="view" hidden aria-labelledby="h-cast">
+        <div class="view-head">
+          <div><p class="eyebrow">Characters</p><h1 id="h-cast">Cast</h1></div>
+          <button id="addCast" class="btn primary" type="button"><span data-icon="plus"></span><span>Add character</span></button>
+        </div>
+        <p class="lead">Save each character once with a reference picture and a short description. Add them to any shot: their description goes into the prompt, and their picture can be the shot's first frame.</p>
+        <div id="castGrid" class="cast-grid"></div>
+      </section>
+
+      <!-- GALLERY -->
+      <section id="view-gallery" class="view" hidden aria-labelledby="h-gallery">
+        <div class="view-head"><div><p class="eyebrow">Everything you made</p><h1 id="h-gallery">Gallery</h1></div></div>
+        <h2 class="sec">Movies</h2>
+        <div id="finalsList" class="movie-grid"></div>
+        <div class="sec-row"><h2 class="sec">Clips</h2><select id="galleryFilter" aria-label="Filter clips by project"></select></div>
+        <div id="clipGrid" class="clip-grid"></div>
+        <div class="sec-row"><h2 class="sec">Images</h2><label class="btn ghost sm file"><span data-icon="upload"></span><span>Upload</span><input id="libUpload" type="file" accept="image/*" multiple hidden></label></div>
+        <div id="imgGrid" class="img-grid"></div>
+        <p id="storageNote" class="hint"></p>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" class="view" hidden aria-labelledby="h-settings">
+        <div class="view-head"><div><p class="eyebrow">Studio</p><h1 id="h-settings">Settings</h1></div></div>
+        <div class="settings-grid">
+          <div class="glass panel">
+            <h2>fal.ai key</h2>
+            <p class="hint">Stored only in this browser (shared with the first version of the app). Videos are made on your fal.ai account and billed there.</p>
+            <div class="row">
+              <input id="falKey" class="grow mono" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key">
+              <button id="toggleKey" class="btn ghost" type="button">Show</button>
+            </div>
+            <div class="row">
+              <button id="saveKey" class="btn primary" type="button">Save key</button>
+              <button id="clearKey" class="btn ghost" type="button">Remove</button>
+            </div>
+            <p id="keyStatus" class="status"></p>
+            <details class="steps-box">
+              <summary>How to get a key</summary>
+              <ol class="steps">
+                <li>Sign up at <a href="https://fal.ai" target="_blank" rel="noopener">fal.ai</a> (Google login works).</li>
+                <li>Add credit at <a href="https://fal.ai/dashboard/billing" target="_blank" rel="noopener">fal.ai/dashboard/billing</a>. $10 goes a long way.</li>
+                <li><a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a> → Add key → copy → paste above.</li>
+              </ol>
+            </details>
+          </div>
+          <div class="glass panel">
+            <h2>Generation</h2>
+            <span class="lbl">Quality</span>
+            <div class="seg" id="qualitySeg" role="radiogroup" aria-label="Quality">
+              <button type="button" data-v="draft" role="radio">Draft</button>
+              <button type="button" data-v="standard" role="radio">Standard</button>
+              <button type="button" data-v="max" role="radio">Max</button>
+            </div>
+            <p class="hint">Draft = lowest resolution the model offers (cheapest, for testing ideas). Standard = 720p where offered. Max = highest.</p>
+            <label class="switch"><input type="checkbox" id="audioToggle"><i></i><span>Generate sound (models that support it)</span></label>
+            <label class="range"><span>Shots at once</span><select id="concurrency"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option></select></label>
+          </div>
+          <div class="glass panel">
+            <h2>Spending</h2>
+            <div class="spend-row"><div><b id="spSession">$0.00</b><small>this session</small></div><div><b id="spTotal">$0.00</b><small>all time on this device</small></div></div>
+            <p class="hint">Estimates from fal's listed prices for clips that finished here. fal bills the exact amount: check fal.ai/dashboard/billing.</p>
+            <button id="resetSpend" class="btn ghost sm" type="button">Reset counters</button>
+          </div>
+          <div class="glass panel">
+            <h2>About</h2>
+            <p class="hint">Scene Studio is open source (MIT). Projects, clips and movies are stored in this browser only. Export a project to move it to another device. <a href="../" >Open the classic version</a>.</p>
+            <p class="hint" id="storageInfo"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-scrim" data-close></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-grab" aria-hidden="true"></div>
+    <div class="sheet-head"><h2 id="sheetTitle"></h2><button class="icon-btn" type="button" data-close aria-label="Close"><span data-icon="x"></span></button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<div id="player" class="player" hidden>
+  <div class="player-top"><span id="playerTitle"></span><button class="icon-btn" type="button" id="playerClose" aria-label="Close player"><span data-icon="x"></span></button></div>
+  <video id="playerVideo" playsinline controls></video>
+  <div class="player-strip" id="playerStrip"></div>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
